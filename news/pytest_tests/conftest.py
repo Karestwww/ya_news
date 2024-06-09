@@ -1,11 +1,10 @@
+import pytest
 from django.conf import settings
 from datetime import timedelta
-from django.urls import reverse
-import pytest
 from django.utils import timezone
-
 from django.test.client import Client
 
+from news.forms import BAD_WORDS
 from news.models import News, Comment
 
 
@@ -61,3 +60,7 @@ def create_few_comments(author, news):
 @pytest.fixture
 def form_data():
     return {'text': 'Новый комментарий'}
+
+@pytest.fixture
+def form_data_with_bad_word():
+    return {'text': f'Пишем плохие слова {BAD_WORDS[0]}'}
