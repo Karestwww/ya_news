@@ -1,71 +1,39 @@
-import pytest
 from http import HTTPStatus
-from django.urls import reverse
+
+import pytest
 from pytest_django.asserts import assertRedirects
+from pytest_lazyfixture import lazy_fixture as lf
+
 
 
 @pytest.mark.parametrize(
-    'name',
+    'url, client_tested, status',
     (
-        'news:home',
-        'users:login',
-        'users:logout',
-        'users:signup',
+        (lf('url_home'), lf('client'), HTTPStatus.OK),
+        (lf('url_login'), lf('client'), HTTPStatus.OK),
+        (lf('url_logout'), lf('client'), HTTPStatus.OK),
+        (lf('url_signup'), lf('client'), HTTPStatus.OK),
+        (lf('url_detail'), lf('client'), HTTPStatus.OK),
+        (lf('url_delete'), lf('author_client'), HTTPStatus.OK),
+        (lf('url_edit'), lf('author_client'), HTTPStatus.OK),
+        (lf('url_delete'), lf('not_author_client'), HTTPStatus.NOT_FOUND),
+        (lf('url_edit'), lf('not_author_client'), HTTPStatus.NOT_FOUND),
     )
 )
 @pytest.mark.django_db(True)
-def test_home_availability_for_anonymous_user(client, name):
-    url = reverse(name)
-    response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
+def test_home_availability_for_anonymous_user(url, client_tested, status):
+    response = client_tested.get(url)
+    assert response.status_code == status
 
-@pytest.mark.django_db(True)
-def test_home_url_user_not_authorized(client, news):
-    url = reverse('news:detail', args=(news.id,))
-    response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
 
 @pytest.mark.parametrize(
-    'name',
-    (
-        'news:delete',
-        'news:edit'
-    )
-)
-def test_pages_availability_for_author_client(
-        author_client, name, news, create_few_comments
-):
-    url = reverse(name, args=(news.pk,))
-    response = author_client.get(url)
-    assert response.status_code == HTTPStatus.OK
-
-@pytest.mark.parametrize(
-    'name',
-    (
-        'news:delete',
-        'news:edit'
-    )
+    'url',
+    (lf('url_delete'), lf('url_edit'),)
 )
 @pytest.mark.django_db(True)
 def test_revers_edit_delete_comment_user_not_authorized(
-    client, name, news, create_few_comments
+    client, url, url_login, create_few_comments
 ):
-    url = reverse(name, args=(news.pk,))
-    url_login = reverse('users:login')
     response = client.get(url)
     redirect_url = f'{url_login}?next={url}'
     assertRedirects(response, redirect_url)
-
-@pytest.mark.parametrize(
-    'name',
-    (
-        'news:delete',
-        'news:edit'
-    )
-)
-def test_pages_availability_for_not_author_client(
-        not_author_client, name, news, create_few_comments
-):
-    url = reverse(name, args=(news.pk,))
-    response = not_author_client.get(url)
-    assert response.status_code == HTTPStatus.NOT_FOUND
