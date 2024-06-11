@@ -9,7 +9,7 @@ from news.forms import CommentForm
     'name',
     (lf('author_client'), lf('client'))
 )
-def test_list_news_home_page_quantity(name, url_home, news_count_on_home_page_plus_one):
+def test_news_home_quantity(name, url_home, news_count_on_home_page_plus_one):
     response = name.get(url_home)
     news_home_page = response.context['object_list']
     news_count = news_home_page.count()

@@ -52,7 +52,7 @@ def news_count_on_home_page_plus_one(db: None):
             date=now - timedelta(days=number)
         )
         for number in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
-        ]
+    ]
     News.objects.bulk_create(many_news)
 
 
