@@ -29,13 +29,13 @@ def author_client(author):
 @pytest.fixture
 def not_author_client(not_author):
     client = Client()
-    client.force_login(not_author)  # Логиним обычного пользователя в клиенте.
+    client.force_login(not_author)
     return client
 
 
 @pytest.fixture
 def news():
-    news = News.objects.create(  # Создаём новость.
+    news = News.objects.create(
         title='Тестовая новость',
         text='Текст тестовой новости',
     )
@@ -60,7 +60,7 @@ def news_count_on_home_page_plus_one(db: None):
 def create_few_comments(author, news):
     now = timezone.now()
     for dela_day_create in range(3):
-        comment = Comment.objects.create(  # Создаём комментарий.
+        comment = Comment.objects.create(
             news=news,
             author=author,
             text=f'Текст тестового комментария {dela_day_create}',)
@@ -80,25 +80,31 @@ def comment(author, news):
 def url_detail(news):
     return reverse('news:detail', args=(news.id,))
 
+
 @pytest.fixture
 def url_delete(comment):
     return reverse('news:delete', args=(comment.pk,))
+
 
 @pytest.fixture
 def url_edit(comment):
     return reverse('news:edit', args=(comment.pk,))
 
+
 @pytest.fixture
 def url_home():
     return reverse('news:home')
+
 
 @pytest.fixture
 def url_login():
     return reverse('users:login')
 
+
 @pytest.fixture
 def url_logout():
     return reverse('users:logout')
+
 
 @pytest.fixture
 def url_signup():

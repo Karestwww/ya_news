@@ -1,6 +1,5 @@
 import pytest
 from django.conf import settings
-from django.urls import reverse
 from pytest_lazyfixture import lazy_fixture as lf
 
 from news.forms import CommentForm
